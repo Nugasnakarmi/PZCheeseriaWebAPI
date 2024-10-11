@@ -1,0 +1,48 @@
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (Rider)
+.idea/
+
+# User-specific files (Visual Studio)
+/.vs
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+bin/
+obj/
+out/
+
+# Files for the publish-release process
+publish/
+msbuild.log
+msbuild.err
+
+# Visual Studio Code cache
+.vscode/
+
+# Node.js dependencies
+node_modules/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.*~
+
+# Log files
+*.log
+
+# Output of the dotnet publish command
+bin/
+obj/

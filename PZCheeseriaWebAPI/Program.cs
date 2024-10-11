@@ -2,7 +2,18 @@ using PZCheeseriaWebAPI.Interfaces;
 using PZCheeseriaWebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var AllowSpecificOrigins = "_allowSpecificOrigins";
+//Allow specific origin to bypass CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(AllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -23,6 +34,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(AllowSpecificOrigins);
+app.UseRouting();
+
 
 app.UseAuthorization();
 

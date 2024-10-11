@@ -18,7 +18,7 @@ namespace PZCheeseriaWebAPI.Controllers;
     }
 
     // GET: api/<CheeseController>
-        [HttpGet]
+        [HttpGet("all")]
         public List<CheeseDTO> GetAll()
         {   
         DataTable cheeseTable = _cheeseService.GetCheeseTable();
