@@ -11,8 +11,7 @@ public class CheeseService : ICheeseService
     private static DataTable table;
     /* The data is being stored in-memory but with more time it could have been stored in a physical database, possibly a relational
      database like SQL Server preferrably, but can also use non-relational databases like MongoDB etc.
-     
-    TODO: Replace in-memory Datatable with physical database.
+     TODO: Replace in-memory Datatable with physical database. Make async functions when communicating with physical db.
      */
 
     public static DataTable DataTable
@@ -45,30 +44,31 @@ public class CheeseService : ICheeseService
             }
             return table;
         }
+        set
+        {
+            table = value;
+        }
     }
 
-    public async Task<List<CheeseDTO>> GetCheeseListAsync()
+    public List<CheeseDTO> GetCheeseList()
     {
         List<CheeseDTO> cheeseList = new List<CheeseDTO>();
-        await Task.Run(() =>
-         {
-             foreach (DataRow cheeseRow in DataTable.Rows)
+        foreach (DataRow cheeseRow in DataTable.Rows)
              {
                  cheeseList.Add(MakeNewCheese(cheeseRow));
              }
-         });
-
+        
         return cheeseList;
     }
 
-    public async Task<CheeseDTO> GetCheeseAsync(int cheeseId)
+    public CheeseDTO GetCheese(int cheeseId)
     {
         try
         {
             string selectExpression = $"Id = {cheeseId}";
-            /*Since querying a datatable is a CPU-bound operation, we can run it on a backgground thread*/
+            /*Since querying a datatable is a CPU-bound operation, we can run it on a background thread*/
 
-            DataRow cheeseRow = await Task.Run(() => DataTable.Select(selectExpression).FirstOrDefault());
+            DataRow cheeseRow = DataTable.Select(selectExpression).FirstOrDefault();
             return MakeNewCheese(cheeseRow);
         }
         catch (Exception ex)
@@ -95,12 +95,13 @@ public class CheeseService : ICheeseService
         }
     }
 
-    public DataTable AddCheeseToTable(CheeseDTO cheese)
+    public CheeseDTO AddCheeseToTable(CheeseDTO cheese)
     {
         try
-        {
+        {           
             table.Rows.Add(null, cheese.Name, cheese.ImageUrl, cheese.PricePerKilo, cheese.Color);
-            return table;
+            var newRow = table.Rows[table.Rows.Count - 1];
+            return MakeNewCheese(newRow);
         }
         catch (Exception ex)
         {
@@ -108,12 +109,12 @@ public class CheeseService : ICheeseService
         }
     }
 
-    public async Task<CheeseDTO> UpdateCheeseAsync(int cheeseId, CheeseDTO cheese)
+    public  CheeseDTO UpdateCheese(int cheeseId, CheeseDTO cheese)
     {
         try
         {
             string selectExpression = $"Id = {cheeseId}";
-            DataRow cheeseRow = await Task.Run(() => DataTable.Select(selectExpression).FirstOrDefault());
+            DataRow cheeseRow =  DataTable.Select(selectExpression).FirstOrDefault();
 
             cheeseRow["Name"] = cheese.Name;
             cheeseRow["Imageurl"] = cheese.ImageUrl;
@@ -128,12 +129,12 @@ public class CheeseService : ICheeseService
         }
     }
 
-    public async Task<bool> DeleteCheeseAsync(int cheeseId)
+    public bool DeleteCheese(int cheeseId)
     {
         try
         {
             string selectExpression = $"Id = {cheeseId}";
-            DataRow cheeseRow = await Task.Run(() => DataTable.Select(selectExpression).FirstOrDefault());
+            DataRow cheeseRow =  DataTable.Select(selectExpression).FirstOrDefault();
 
             if (cheeseRow == null)
                 return false;
