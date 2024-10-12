@@ -14,47 +14,54 @@ namespace PZCheeseriaWebAPI.Controllers;
 public class CheeseController : ControllerBase
 {
     private readonly ICheeseService _cheeseService;
-  /*  private DataTable cheeseTable;
-*/
+
     public CheeseController(ICheeseService cheeseService)
     {
         _cheeseService = cheeseService;
        /* cheeseTable = _cheeseService.GetCheeseTable();*/
     }
+    // In the future, when user authentication is done. These endpoints can be applied with authorization policies that control whether a user can 
+    // get access to, update, delete or add cheese.
 
     // GET: api/<CheeseController>
     [HttpGet("all")]
-    public List<CheeseDTO> GetAll()
+    public async Task<List<CheeseDTO>> GetAll()
     {
-        return _cheeseService.GetCheeseList();
+        return await _cheeseService.GetCheeseListAsync();
     }
 
     // GET api/<CheeseController>/5
+    
     [HttpGet("{id}")]
-    public string Get(int id)
+    public async Task<CheeseDTO> GetCheese(int id)
     {
-        return "value";
+         return await _cheeseService.GetCheeseAsync(id);
     }
 
     // POST api/<CheeseController>
     [HttpPost]
-    public IActionResult Post([FromBody] CheeseDTO cheese)
+    public async Task<IActionResult> Post([FromBody] CheeseDTO cheese)
     {
          _cheeseService.AddCheeseToTable( cheese);
 
-        return Ok(_cheeseService.GetCheeseList());
+        return Ok( await _cheeseService.GetCheeseListAsync());
     }
 
     // PUT api/<CheeseController>/5
     [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    public async Task<IActionResult> Put(int id, [FromBody] CheeseDTO cheese)
     {
+      CheeseDTO updatedCheese = await _cheeseService.UpdateCheeseAsync(id,cheese);
+
+        return Ok(updatedCheese);
     }
 
     // DELETE api/<CheeseController>/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
+       bool deleted = await _cheeseService.DeleteCheeseAsync(id);
+        return Ok(deleted);
     }
 
   

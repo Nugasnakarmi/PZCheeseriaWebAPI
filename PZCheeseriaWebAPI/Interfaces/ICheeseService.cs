@@ -6,7 +6,11 @@ namespace PZCheeseriaWebAPI.Interfaces
     public interface ICheeseService
     {
         public DataTable GetCheeseTable();
-        public List<CheeseDTO> GetCheeseList();
+
+        public Task<List<CheeseDTO>> GetCheeseListAsync();
         public DataTable AddCheeseToTable( CheeseDTO cheese);
+        public Task<CheeseDTO> UpdateCheeseAsync(int cheeseId, CheeseDTO cheese);
+        public Task<CheeseDTO> GetCheeseAsync(int id);
+        public Task<bool> DeleteCheeseAsync(int cheeseId);
     }
 }
