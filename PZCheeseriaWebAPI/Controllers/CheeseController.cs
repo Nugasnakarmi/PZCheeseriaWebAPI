@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PZCheeseriaWebAPI.DTO;
+using PZCheeseriaWebAPI.Helpers;
 using PZCheeseriaWebAPI.Interfaces;
 using PZCheeseriaWebAPI.Services;
 using System.Data;
@@ -27,7 +28,15 @@ public class CheeseController : ControllerBase
     [HttpGet("all")]
     public async Task<List<CheeseDTO>> GetAll()
     {
-        return await _cheeseService.GetCheeseListAsync();
+        try
+        {
+            return await _cheeseService.GetCheeseListAsync();
+
+        }
+        catch (ExceptionHelper ex)
+        {
+            return [];
+        }
     }
 
     // GET api/<CheeseController>/5
@@ -35,33 +44,61 @@ public class CheeseController : ControllerBase
     [HttpGet("{id}")]
     public async Task<CheeseDTO> GetCheese(int id)
     {
-         return await _cheeseService.GetCheeseAsync(id);
+        try
+        {
+            return await _cheeseService.GetCheeseAsync(id);
+        }
+        catch (ExceptionHelper ex)
+        {
+            return null;
+        }
     }
 
     // POST api/<CheeseController>
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CheeseDTO cheese)
     {
-         _cheeseService.AddCheeseToTable( cheese);
+        try
+        {
+            _cheeseService.AddCheeseToTable(cheese);
 
-        return Ok( await _cheeseService.GetCheeseListAsync());
+            return Ok(await _cheeseService.GetCheeseListAsync());
+        }
+        catch (ExceptionHelper ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
     // PUT api/<CheeseController>/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] CheeseDTO cheese)
     {
-      CheeseDTO updatedCheese = await _cheeseService.UpdateCheeseAsync(id,cheese);
+        try
+        {
+            CheeseDTO updatedCheese = await _cheeseService.UpdateCheeseAsync(id, cheese);
 
-        return Ok(updatedCheese);
+            return Ok(updatedCheese);   
+        }
+        catch (ExceptionHelper ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+
     }
 
     // DELETE api/<CheeseController>/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-       bool deleted = await _cheeseService.DeleteCheeseAsync(id);
-        return Ok(deleted);
+        try
+        {
+            bool deleted = await _cheeseService.DeleteCheeseAsync(id);
+            return Ok(deleted);
+        }
+        catch (ExceptionHelper ex) { 
+            return StatusCode(500, ex.Message);
+        }
     }
 
   
