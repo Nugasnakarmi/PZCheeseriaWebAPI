@@ -2,6 +2,8 @@
 using PZCheeseriaWebAPI.Helpers;
 using PZCheeseriaWebAPI.Interfaces;
 using System.Data;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace PZCheeseriaWebAPI.Services;
 
@@ -88,12 +90,13 @@ public class CheeseService : ICheeseService
         try
         {
             int id = int.Parse(cheeseRow["Id"].ToString());
-            string name = cheeseRow["Name"].ToString();
-            string imageUrl = cheeseRow["ImageUrl"].ToString();
+            string name = cheeseRow["Name"].ToString() ?? "";
+            string imageUrl = cheeseRow["ImageUrl"].ToString() ?? "";
             decimal pricePerKilo = decimal.Parse(cheeseRow["PricePerKilo"].ToString());
-            string color = cheeseRow["Color"].ToString();
+            string color = cheeseRow["Color"].ToString() ?? "";
+            var cheese = new CheeseDTO() { Id = id, Name = name, ImageUrl = imageUrl, PricePerKilo = pricePerKilo, Color = color};
 
-            return new CheeseDTO(id, name, imageUrl, pricePerKilo, color);
+            return cheese;
         }
         catch (Exception ex)
         {
