@@ -2,7 +2,6 @@
 using PZCheeseriaWebAPI.Helpers;
 using PZCheeseriaWebAPI.Interfaces;
 using System.Data;
-using System.Data.Common;
 
 namespace PZCheeseriaWebAPI.Services;
 
@@ -53,11 +52,15 @@ public class CheeseService : ICheeseService
     public List<CheeseDTO> GetCheeseList()
     {
         List<CheeseDTO> cheeseList = new List<CheeseDTO>();
+        if (DataTable.Rows.Count == 0)
+        {
+            return [];
+        }
         foreach (DataRow cheeseRow in DataTable.Rows)
-             {
-                 cheeseList.Add(MakeNewCheese(cheeseRow));
-             }
-        
+        {
+            cheeseList.Add(MakeNewCheese(cheeseRow));
+        }
+
         return cheeseList;
     }
 
@@ -66,9 +69,12 @@ public class CheeseService : ICheeseService
         try
         {
             string selectExpression = $"Id = {cheeseId}";
-            /*Since querying a datatable is a CPU-bound operation, we can run it on a background thread*/
 
             DataRow cheeseRow = DataTable.Select(selectExpression).FirstOrDefault();
+            if (cheeseRow == null)
+            {
+                return null;
+            }
             return MakeNewCheese(cheeseRow);
         }
         catch (Exception ex)
@@ -98,7 +104,7 @@ public class CheeseService : ICheeseService
     public CheeseDTO AddCheeseToTable(CheeseDTO cheese)
     {
         try
-        {           
+        {
             table.Rows.Add(null, cheese.Name, cheese.ImageUrl, cheese.PricePerKilo, cheese.Color);
             var newRow = table.Rows[table.Rows.Count - 1];
             return MakeNewCheese(newRow);
@@ -109,12 +115,16 @@ public class CheeseService : ICheeseService
         }
     }
 
-    public  CheeseDTO UpdateCheese(int cheeseId, CheeseDTO cheese)
+    public CheeseDTO UpdateCheese(int cheeseId, CheeseDTO cheese)
     {
         try
         {
             string selectExpression = $"Id = {cheeseId}";
-            DataRow cheeseRow =  DataTable.Select(selectExpression).FirstOrDefault();
+            DataRow cheeseRow = DataTable.Select(selectExpression).FirstOrDefault();
+            if (cheeseRow == null)
+            {
+                return null;
+            }
 
             cheeseRow["Name"] = cheese.Name;
             cheeseRow["Imageurl"] = cheese.ImageUrl;
@@ -134,7 +144,7 @@ public class CheeseService : ICheeseService
         try
         {
             string selectExpression = $"Id = {cheeseId}";
-            DataRow cheeseRow =  DataTable.Select(selectExpression).FirstOrDefault();
+            DataRow cheeseRow = DataTable.Select(selectExpression).FirstOrDefault();
 
             if (cheeseRow == null)
                 return false;

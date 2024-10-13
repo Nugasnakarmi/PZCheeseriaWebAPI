@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PZCheeseriaWebAPI.DTO;
 using PZCheeseriaWebAPI.Helpers;
 using PZCheeseriaWebAPI.Interfaces;
-using PZCheeseriaWebAPI.Services;
-using System.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,16 +25,22 @@ public class CheeseController : ControllerBase
     /// Gets a list of all cheeses.
     /// </summary>
     /// <returns>A List of Cheese or empty on exception thrown.</returns>
+    /// <response code="200">Fetches Cheese list</response>
+    /// <response code="500">Something went wrong in the server</response>
     [HttpGet("all")]
-    public List<CheeseDTO> GetAll()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult GetAll()
     {
         try
         {
-            return _cheeseService.GetCheeseList();
+            List<CheeseDTO> cheeseList = _cheeseService.GetCheeseList();
+
+            return Ok(cheeseList);
         }
         catch (ExceptionHelper ex)
         {
-            return [];
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 
@@ -45,16 +48,28 @@ public class CheeseController : ControllerBase
     /// Gets cheese information using id.
     /// </summary>
     /// <returns>A single cheese object.</returns>
+    /// <response code="200">Fetches Cheese</response>
+    /// <response code="404">Cheese not found</response>
+    /// <response code="500">Something went wrong in the server</response>
     [HttpGet("{id}")]
-    public CheeseDTO GetCheese(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult GetCheese(int id)
     {
         try
         {
-            return _cheeseService.GetCheese(id);
+            var cheese = _cheeseService.GetCheese(id);
+
+            if (cheese == null)
+            {
+                return NotFound();
+            }
+            return Ok(cheese);
         }
         catch (ExceptionHelper ex)
         {
-            return null;
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 
@@ -64,13 +79,14 @@ public class CheeseController : ControllerBase
     /// <remarks>
     /// Example request:
     ///
-    /// POST api/Cheese
+    /// ```POST api/Cheese
     /// {
     ///     "Name": "Cheddar",
     ///     "ImageUrl": "https://www.cheese.com/media/img/cheese/cheddar_large.jpg",
     ///     "PricePerKilo": "85",
     ///     "Color": "Pale Yellow"
     /// }
+    /// ```
     /// </remarks>
     /// <param name="cheese"></param>
     /// <returns>Newly created cheese</returns>
@@ -89,18 +105,33 @@ public class CheeseController : ControllerBase
         }
         catch (ExceptionHelper ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 
     /// <summary>
     /// Updates cheese information.
     /// </summary>
+    /// <remarks>
+    /// Example request:
+    ///
+    /// ```PUT api/Cheese
+    /// {   
+    ///     "Name": "Cheddar",
+    ///     "ImageUrl": "https://www.cheese.com/media/img/cheese/cheddar_large.jpg",
+    ///     "PricePerKilo": "85",
+    ///     "Color": "Pale Yellow"
+    /// }
+    /// ```
+    /// </remarks>
+    /// <param name="cheese"></param>
     /// <returns>Updated cheese</returns>
     /// <response code="200">Cheese updated</response>
+    /// <response code="404">Cheese not found</response>
     /// <response code="500">Something went wrong in the server</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult Put(int id, [FromBody] CheeseDTO cheese)
     {
@@ -108,11 +139,16 @@ public class CheeseController : ControllerBase
         {
             CheeseDTO updatedCheese = _cheeseService.UpdateCheese(id, cheese);
 
+            if (updatedCheese == null)
+            {
+                return NotFound();
+            }
+
             return Ok(updatedCheese);
         }
         catch (ExceptionHelper ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 
@@ -121,19 +157,26 @@ public class CheeseController : ControllerBase
     /// </summary>
     /// <returns>Boolean value based on success of deletion. </returns>
     /// <response code="200">Cheese deleted</response>
+    /// <response code="404">Cheese not found</response>
     /// <response code="500">Something went wrong in the server</response>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult Delete(int id)
     {
         try
         {
-            return Ok(_cheeseService.DeleteCheese(id));
+            var result = _cheeseService.DeleteCheese(id);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
         catch (ExceptionHelper ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 }
