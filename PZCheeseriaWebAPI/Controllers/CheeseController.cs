@@ -86,7 +86,6 @@ public class CheeseController : ControllerBase
         {
             CheeseDTO newCheese = _cheeseService.AddCheeseToTable(cheese);
             return CreatedAtAction("GetCheese", new { id = newCheese.Id }, newCheese);
-          /*  return Ok(newCheese);*/
         }
         catch (ExceptionHelper ex)
         {
