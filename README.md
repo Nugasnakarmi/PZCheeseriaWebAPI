@@ -45,4 +45,4 @@ The API provides the following endpoints:
 
 - DELETE /api/cheese/{id}: Delete a specific cheese by ID.
 
-TO DO : Successfully containerize API( only frontend has been successfully containerized.)
+TO DO : Successfully containerize API( only frontend has been successfully containerized.), I managed to successfully build the image and run the docker container using the multi-stage build setup but for some reason the API didn't work in the container.
