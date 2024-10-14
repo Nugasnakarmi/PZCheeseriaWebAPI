@@ -9,7 +9,7 @@ PZCheeseriaWebAPI is a .NET Core Web API project that serves as the backend for 
 - CRUD operations for cheese data
 - In-memory data storage
 - Exception handling and error responses
-- Unit testing for key functionalities
+- Unit testing for key functionalities with xUnit
 - Swagger documentation for API endpoints
 
 ## Getting Started
@@ -35,12 +35,14 @@ PZCheeseriaWebAPI is a .NET Core Web API project that serves as the backend for 
 Using the API
 The API provides the following endpoints:
 
-GET /api/cheese: Retrieve all cheeses.
+- GET /api/cheese: Retrieve all cheeses.
 
-GET /api/cheese/{id}: Retrieve a specific cheese by ID.
+- GET /api/cheese/{id}: Retrieve a specific cheese by ID.
 
-POST /api/cheese: Add a new cheese.
+- POST /api/cheese: Add a new cheese.
 
-PUT /api/cheese/{id}: Update an existing cheese by ID.
+- PUT /api/cheese/{id}: Update an existing cheese by ID.
 
-DELETE /api/cheese/{id}: Delete a specific cheese by ID.
+- DELETE /api/cheese/{id}: Delete a specific cheese by ID.
+
+TO DO : Successfully containerize API( only frontend has been successfully containerized.)
